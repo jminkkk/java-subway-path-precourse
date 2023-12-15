@@ -3,6 +3,7 @@ package subway.controller;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
@@ -23,7 +24,7 @@ public class PathController {
 
     public DijkstraShortestPath getGraph(String pathType) {
         WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph(DefaultWeightedEdge.class);
-        stationRepository.stations().forEach(station -> graph.addVertex(station));
+        stationRepository.stations().forEach(graph::addVertex);
 
         sectionInfoRepository.sectionInfos()
                 .forEach(sectionInfo ->
@@ -36,11 +37,9 @@ public class PathController {
         return new DijkstraShortestPath(graph);
     }
 
-    public List<Station> getMinimumPath(String pathType, String start, String end) {
-        Station startStation = stationRepository.findByName(start);
-        Station endStation = stationRepository.findByName(end);
-
-        return getGraph(pathType).getPath(startStation, endStation).getVertexList();
+    public List<Station> getMinimumPath(String pathType, Station start, Station end) {
+        GraphPath graphPath = getGraph(pathType).getPath(start, end);
+        return graphPath.getVertexList();
     }
 
     public String getTotalValueByType(List<Station> shortestPaths, String type) {
@@ -56,7 +55,7 @@ public class PathController {
 
             totalDistance += sectionInfos.stream()
                     .min(Comparator.comparing(sectionInfo -> sectionInfo.getValue(type)))
-                    .orElseThrow()
+                    .orElseThrow(() -> new IllegalArgumentException("[ERROR] 최단 경로가 존재하지 않습니다."))
                     .getValue(type);
         }
 

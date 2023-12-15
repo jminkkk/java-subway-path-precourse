@@ -55,6 +55,10 @@ public class InitController {
         }
     }
 
+    public Station getStation(String name) {
+        return stationRepository.findByName(name);
+    }
+
 
     // TODO: 다른 팩토리랑 통일성
     public Section createSection(Line line, String startStationName, String finishStationName) {
