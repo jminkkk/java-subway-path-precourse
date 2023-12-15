@@ -9,6 +9,7 @@ import static subway.message.PrintMessage.INPUT_START_STATION;
 import static subway.message.PrintMessage.MAIN_MENU;
 import static subway.message.PrintMessage.PATH_MENU;
 import static subway.message.PrintMessage.RESULT_PATH;
+import static subway.util.PathValidator.validatePath;
 
 import java.util.List;
 import subway.domain.Station;
@@ -18,6 +19,10 @@ import subway.view.OutputView;
 public class MainController {
     private static final String QUIT_OPTION = "Q";
     private static final String BACK_OPTION = "B";
+    private static final String PATH_TYPE_DISTANCE = "DISTANCE";
+    private static final String PATH_TYPE_DURATION = "DURATION";
+    private static final String DISTANCE_UNIT = "km";
+    private static final String DURATION_UNIT = "분";
     private final InputView inputView;
     private final InitController initController;
     private final PathController pathController;
@@ -29,7 +34,7 @@ public class MainController {
     }
 
     public void run() {
-        initController.initInfo();
+        initController.initSubwayInfo();
 
         while (true) {
             OutputView.println(MAIN_MENU);
@@ -38,11 +43,11 @@ public class MainController {
                 break;
             }
 
-            runPath();
+            getShortestPath();
         }
     }
 
-    private void runPath() {
+    private void getShortestPath() {
         OutputView.println(PATH_MENU);
         OutputView.println(INPUT_OPTION);
         String pathType = inputView.readPathType();
@@ -55,6 +60,7 @@ public class MainController {
         String start = inputView.readStation();
         OutputView.println(INPUT_END_STATION);
         String end = inputView.readStation();
+        validatePath(start, end);
 
         List<Station> shortestPath = pathController.getMinimumPath(pathType, start, end);
         printPath(shortestPath);
@@ -63,8 +69,8 @@ public class MainController {
     private void printPath(List<Station> shortestPath) {
         OutputView.println(RESULT_PATH);
         OutputView.println(INFO_SPLITTER.getMessage());
-        OutputView.println(INFO_TOTAL_DISTANCE.getMessage() + pathController.getTotalValueByType(shortestPath, "DISTANCE") + "km");
-        OutputView.println(INFO_TOTAL_DURATION.getMessage() + pathController.getTotalValueByType(shortestPath, "DISTANCE") + "분");
+        OutputView.println(INFO_TOTAL_DISTANCE.getMessage() + pathController.getTotalValueByType(shortestPath, PATH_TYPE_DISTANCE) + DISTANCE_UNIT);
+        OutputView.println(INFO_TOTAL_DURATION.getMessage() + pathController.getTotalValueByType(shortestPath, PATH_TYPE_DURATION) + DURATION_UNIT);
         OutputView.println(INFO_SPLITTER);
         shortestPath.forEach(station -> OutputView.println(station.getName()));
     }

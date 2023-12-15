@@ -27,7 +27,7 @@ public class InitController {
         this.sectionRepository = sectionRepository;
     }
 
-    public void initInfo() {
+    public void initSubwayInfo() {
         List<Station> stations = createStations("교대역, 강남역, 역삼역, 남부터미널역, 양재역, 양재시민의숲역, 매봉역");
         stationRepository.addStations(stations);
 
@@ -54,6 +54,7 @@ public class InitController {
             sectionInfoRepository.addSectionInfo(sectionInfo);
         }
     }
+
 
     // TODO: 다른 팩토리랑 통일성
     public Section createSection(Line line, String startStationName, String finishStationName) {

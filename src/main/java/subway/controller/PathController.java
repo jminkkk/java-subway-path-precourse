@@ -52,7 +52,7 @@ public class PathController {
 
             List<SectionInfo> sectionInfos = sectionInfoRepository.sectionInfos().stream()
                     .filter(sectionInfo -> sectionInfo.getSection().isSameSection(start, end))
-                    .collect(Collectors.toList());
+                    .collect(Collectors.toUnmodifiableList());
 
             totalDistance += sectionInfos.stream()
                     .min(Comparator.comparing(sectionInfo -> sectionInfo.getValue(type)))
